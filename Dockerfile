@@ -25,8 +25,8 @@ ENV RUBY_DOWNLOAD_SHA256 e1cc5cbbcaa8644e282f04763d96057ddd6f443338a5019200e8726
 ENV RUBYGEMS_VERSION 2.7.7
 ENV BUNDLER_VERSION 1.16.4
 
-RUN mkdir -p /usr/src/ruby
-COPY ruby-2.1.4 /usr/src/ruby
+RUN mkdir /ruby-patch
+COPY ruby-2.1.4 /ruby-patch
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
@@ -53,12 +53,14 @@ RUN set -ex \
 	&& apt-get install -y --no-install-recommends $buildDeps \
 	&& rm -rf /var/lib/apt/lists/* \
 	\
-	# && wget -O ruby.tar.xz "https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR%-rc}/ruby-$RUBY_VERSION.tar.xz" \
-	# && echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.xz" | sha256sum -c - \
-	# \
-	# && mkdir -p /usr/src/ruby \
-	# && tar -xJf ruby.tar.xz -C /usr/src/ruby --strip-components=1 \
-	# && rm ruby.tar.xz \
+	&& wget -O ruby.tar.xz "https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR%-rc}/ruby-$RUBY_VERSION.tar.xz" \
+	&& echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.xz" | sha256sum -c - \
+	\
+	&& mkdir -p /usr/src/ruby \
+	&& tar -xJf ruby.tar.xz -C /usr/src/ruby --strip-components=1 \
+	&& rm ruby.tar.xz \
+	&& /bin/cp -aT /ruby-patch /usr/src/ruby \
+	&& rm -rf /ruby-patch \
 	\
 	&& cd /usr/src/ruby \
 	\
