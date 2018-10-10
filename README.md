@@ -8,4 +8,3 @@ The various ruby versions exist as separate branches in the repository and the D
 
 - 2.1.4
 - 2.1.10
-- 2.2.10
